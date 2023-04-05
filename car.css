@@ -1,0 +1,21 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: hsl(0, 3%, 22%);
+    
+}
+#canvas{
+    /* width: 250px;
+    height: 100vh; */
+    background: #1f1d1d;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%,0);
+}
