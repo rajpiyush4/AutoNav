@@ -21,10 +21,10 @@ class Road {
 
     
 
-    // getLaneCenter(laneIndex) {
-    //     const laneWidth = this.width / this.lanecount
-    //     return ((this.left + laneWidth/2) +(Math.min(laneIndex, this.lanecount-1 )*laneWidth))
-    // }
+    getLaneCenter(laneIndex) {
+        const laneWidth = this.width / this.lanecount
+        return ((this.left + laneWidth/2) +(Math.min(laneIndex, this.lanecount-1 )*laneWidth))
+    }
 
     draw(ctx) {
         ctx.lineWidth = 2
@@ -34,7 +34,6 @@ class Road {
             let lanes = lerp(this.left, this.right, i / this.lanecount)
 
             ctx.setLineDash([20, 20]);
-
             ctx.beginPath() 
             ctx.moveTo(lanes, this.top)
             ctx.lineTo(lanes, this.bottom)

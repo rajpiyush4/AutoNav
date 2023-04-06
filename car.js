@@ -13,24 +13,62 @@ class Car {
         this.angle = 0
         this.controls = new Controls()
         this.sensors = new Sensors(this)
+        this.damaged = false
+        // this.polygon
         this.#move() // this is a private method
+        // this.#createPolygon()
     }
 
-    draw(ctx) {
-        ctx.fillStyle = this.color
-        ctx.save()
-        ctx.translate(this.x, this.y)
-        ctx.rotate(-this.angle)
-        ctx.beginPath()
-        ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height)
-        ctx.closePath()
-        ctx.restore()
-        this.sensors.draw(ctx)
-    }
     update(roadBorders) {
-        this.#move()
+        if(!this.damaged){
+            this.#move()
+            this.polygon = this.#createPolygon()
+            this.damaged = this.#assessDamage(roadBorders)
+        } 
         this.sensors.update(roadBorders)
+        // console.log(this.#createPolygon())
+        //  console.log( Math.tan(this.width / this.height)) 
+    }
 
+    #assessDamage(roadBorders) {
+        for (let i = 0; i < roadBorders.length; i++) {
+            if (polyIntersect(this.polygon, roadBorders[i])) {
+                return true;
+            }
+        }
+        return false
+    }
+    //as the canvas is rotating and so we don't know cars coordinates, we need to calculate them
+    #createPolygon() {
+        const points = []
+        const rad = Math.hypot(this.width, this.height)/2
+        const alpha = Math.atan2(this.width, this.height)
+
+        points.push(
+            {
+                x: this.x - Math.sin(this.angle - alpha) * rad,
+                y: this.y - Math.cos(this.angle - alpha) * rad
+            }
+        )
+        points.push(
+            {
+                x: this.x - Math.sin(this.angle + alpha) * rad,
+                y: this.y - Math.cos(this.angle + alpha) * rad
+            }
+        )
+        points.push(
+            {
+                x: this.x - Math.sin(Math.PI + (this.angle) - alpha) * rad,
+                y: this.y - Math.cos(Math.PI + (this.angle) - alpha) * rad
+            }
+        )
+        points.push(
+            {
+                x: this.x - Math.sin(Math.PI + (this.angle) + alpha) * rad,
+                y: this.y - Math.cos(Math.PI + (this.angle) + alpha) * rad
+            }
+        )
+        return points
     }
     #move() {
         if (this.speed > 0) {
@@ -72,4 +110,28 @@ class Car {
         }
     }
 
+    draw(ctx) {
+        // ctx.fillStyle = this.color
+        // ctx.save()
+        // ctx.translate(this.x, this.y)
+        // ctx.rotate(-this.angle)
+        // ctx.beginPath()
+        // ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height)
+        // ctx.closePath()
+        // ctx.restore()
+        // console.log(this.damaged)
+        if(this.damaged){
+            ctx.fillStyle = 'red'
+        }else{
+        ctx.fillStyle = this.color
+        }
+        ctx.beginPath()
+        ctx.moveTo(this.polygon[0].x , this.polygon[0].y)
+
+        for (let i = 1; i < this.polygon.length;  i++) {//1 as already moved to first point previously
+            ctx.lineTo(this.polygon[i].x, this.polygon[i].y )
+        }
+        ctx.fill()
+        this.sensors.draw(ctx)
+    }
 }

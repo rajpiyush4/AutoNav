@@ -2,11 +2,11 @@ class Sensors{
     constructor(car){
         this.car = car
         this.rayLength = 100
-        this.rayCount = 3
-        this.raySpread = Math.PI/4
+        this.rayCount = 5
+        this.raySpread = Math.PI/3
         this.rays=[]
         this.readings=[]
-        this.#castRays()
+        // this.#castRays()
     }
 
     update(roadBorders){
@@ -20,13 +20,52 @@ class Sensors{
        }
     }
 
+    #getReading(ray, roadBorders){
+           let touches = []
+           for (let i = 0; i < roadBorders.length; i++) {
+                 const touch = getIntersection(
+                    ray[0],
+                    ray[1],
+                    roadBorders[i][0],
+                    roadBorders[i][1]
+                 )
+                    if(touch){
+                        touches.push(touch)
+                    }
+           }
+
+           if(touches.length == 0){
+            return null
+           }
+           else{
+            const offsets = touches.map(touch => touch.offset)
+            const minOffset = Math.min(...offsets)
+            return touches.find(touch => touch.offset == minOffset)
+           }
+    }
+
     draw(ctx){
-        ctx.strokeStyle = 'gold'
-        ctx.lineWidth = 2  
         for (let i = 0; i < this.rayCount; i++) {
+            let end = this.rays[i][1]
+            if(this.readings[i]){
+                end = this.readings[i]
+            }
+            
+            ctx.strokeStyle = 'gold'
+            ctx.lineWidth = 2  
             ctx.beginPath()
             ctx.moveTo(this.rays[i][0].x, this.rays[i][0].y)
-            ctx.lineTo(this.rays[i][1].x, this.rays[i][1].y)
+            // ctx.lineTo(this.rays[i][1].x, this.rays[i][1].y)
+            ctx.lineTo(end.x, end.y)
+            ctx.stroke()
+
+
+            ctx.strokeStyle = 'red'
+            ctx.lineWidth = 2  
+            ctx.beginPath()
+            ctx.moveTo(this.rays[i][1].x, this.rays[i][1].y) //draw from tip of ray
+            // ctx.lineTo(this.rays[i][1].x, this.rays[i][1].y)
+            ctx.lineTo(end.x, end.y)
             ctx.stroke()
             
         } 

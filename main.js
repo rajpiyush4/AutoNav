@@ -12,8 +12,15 @@ const carDimensions = {
     color: 'whitesmoke'
 }
 const car = new Car(carDimensions)
+const traffic = [
+    new Car({x:road.getLaneCenter(1), y:-100,width:30,height:50,color:'red'}),
+]
 
 function animate(){
+    for (let i = 0; i < traffic.length; i++) {
+        traffic[i].update(road.border)
+        
+    }
     car.update(road.border)
     canvas.height = window.innerHeight
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -22,8 +29,11 @@ function animate(){
 
     road.draw(ctx)
     car.draw(ctx)
+    for (let i = 0; i < traffic.length; i++) {
+        traffic[i].draw(ctx)
+    }
     ctx.restore()
     requestAnimationFrame(animate)
 }
 animate()
-console.log(road.border, road.border.lengths)
+console.log(road.border, road.border.lengths, Sensors.rays)
